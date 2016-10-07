@@ -64,8 +64,13 @@ etrg_plot = [];
 etst_plot = [];
 for i = 1:length(N1_values)
     N1 = N1_values(i);
-    o1 = o_values{i};
-    [error_subset fs_info] = evaluate_subset(training_file, validation_file, N, M, isClassification, o1, testing_file, options);
+    if(length(o_values)<i)
+        error_subset.trg = NaN;
+        error_subset.tst = NaN;
+    else
+        o1 = o_values{i};
+        [error_subset fs_info] = evaluate_subset(training_file, validation_file, N, M, isClassification, o1, testing_file, options);
+    end
     etrg_plot = [etrg_plot; error_subset.trg]
     etst_plot = [etst_plot; error_subset.tst]
 end
@@ -102,6 +107,13 @@ end
     if(fileHasAllSubset)
         for i = 1:max(N1_values)
             N1 = i;
+            if(length(v)<start+N1-1)
+                x = v(start:end);
+                if(length(o_values{end})<length(x))
+                    o_values{end+1} = x;
+                end
+                break;
+            end
             x = v(start:start+N1-1);
             if(~isempty(find(N1_values==i)))
                 o_values{end+1} = x;

@@ -3,6 +3,10 @@
 
 argv <- commandArgs(trailingOnly = TRUE)
 
+# argvcmd <- '/tmp/featuresel/images/BCANCER9891_ePLOFS_EtrgEstVsN1.eps 1 /tmp/featuresel/results/BCANCER9891_ePLOFS_EtrgEstVsN1.csv ePLOFS'
+# argv <- strsplit(argvcmd, ' ')[[1]]
+# print(argv)
+
 # rm(list = ls())
 # argv = vector()
 # argv[1] = "/tmp/featuresel/images/CONCRETE3_ReliefF_EtrgEstVsN1.eps"
@@ -30,6 +34,17 @@ linePlot <- function(xCol, yCols, xlabel, ylabel, legendTitles, smoothen = T, su
     }
   }
   
+  for (i in 1:ncol(yCols)) {
+    for(r in 2:nrow(yCols)) {
+      if(is.na(yCols[r, i])) {
+        yCols[r, i] <- yCols[r-1, i];
+      }
+    }
+  }
+  
+  # output = NULL;
+  # x11();
+  
   if(!is.null(output)) {
     setEPS()
     postscript(output, width = 4.5, height = 5, horizontal = FALSE, onefile = FALSE, paper = "special")
@@ -42,18 +57,18 @@ linePlot <- function(xCol, yCols, xlabel, ylabel, legendTitles, smoothen = T, su
   
   ylim1 = NULL
   
-  minima = min(yCols)
+  minima = min(yCols, na.rm = T)
   
-  maxima = max(yCols)
+  maxima = max(yCols, na.rm = T)
   
   fullRange = maxima - minima
   
-  legendAreaClearance = 0; #maxima - min(yCols[1:round(nrow(yCols) / 2), ])
+  legendAreaClearance = maxima - min(yCols[1:round(nrow(yCols) / 2), ], na.rm = T)
   
   if (legendAreaClearance < 0.2 * fullRange) {
     ylim1 <- c(minima, maxima + 0.2 * fullRange)
     print(ylim1)
-    print(c(max(yCols), min(yCols)))
+    print(c(max(yCols, na.rm = T), min(yCols, na.rm = T)))
   }
   
   # atop(N[it],paste('(',letters[i],')'))
